@@ -1,0 +1,40 @@
+// Установка необходимых зависимостей
+require 'vendor/autoload.php';
+
+use Illuminate\Database\Capsule\Manager as Capsule;
+
+// Инициализация фреймворка Laravel
+$app = new Illuminate\Container\Container;
+$app->singleton(
+    Illuminate\Contracts\Http\Kernel::class,
+    App\Http\Kernel::class
+);
+$app->singleton(
+    Illuminate\Contracts\Console\Kernel::class,
+    App\Console\Kernel::class
+);
+$app->singleton(
+    Illuminate\Contracts\Debug\ExceptionHandler::class,
+    App\Exceptions\Handler::class
+);
+
+// Инициализация соединения с базой данных
+$capsule = new Capsule;
+$capsule->addConnection([
+    'driver' => 'mysql',
+    'host' => 'localhost',
+    'database' => 'blog',
+    'username' => 'root',
+    'password' => '',
+    'charset' => 'utf8',
+    'collation' => 'utf8_unicode_ci',
+    'prefix' => '',
+]);
+$capsule->bootEloquent();
+
+// Запуск приложения
+$response = $app->make(Illuminate\Contracts\Http\Kernel::class)->handle(
+    $request = Illuminate\Http\Request::capture()
+);
+$response->send();
+$app->terminate($request, $response);
